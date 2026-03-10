@@ -1,17 +1,18 @@
+HealthTicket is a React/Next.js frontend for a healthcare ticketing system. It provides user, operator and admin interfaces with AI-assisted ticket creation, comment threads, dashboards, and SLA tracking.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies and run the development server:
 
 ```bash
+npm install
 npm run dev
 # or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# yarn dev
+# pnpm dev
+# bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

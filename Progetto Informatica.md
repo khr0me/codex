@@ -16,13 +16,19 @@ delle comunicazioni.
 # Requisiti Funzionali
 • Apertura ticket da parte dell'utente: titolo, descrizione, categoria
 (IT/Amministrativo/Altro), priorità
+• Il form di creazione può mostrare suggerimenti automatici (categoria, riepilogo)
+  basati su un servizio AI interno o esterno
 • Assegnazione ticket a un operatore da parte dell'admin
 • Cambio stato del ticket: aperto → in lavorazione → in attesa risposta → chiuso
 • Sistema di commenti/risposte per ogni ticket (thread di conversazione)
+• Commenti possono essere contrassegnati come interni (solo operatori/admin)
 • Notifica via email quando il ticket cambia stato o riceve una risposta
 • Dashboard admin: numero ticket aperti per categoria, operatori più carichi, tempo
-medio di risoluzione
+medio di risoluzione (grafici con Chart.js)
 • Storico completo di ogni ticket con chi ha fatto cosa e quando
+• Allegati ai ticket (upload file) con visualizzazione negli stessi record
+• Alla chiusura, l’utente può assegnare una valutazione all’operatore
+• Sistema SLA: avvisi nel dashboard quando un ticket resta aperto oltre X ore
 
 # Requisiti Tecnici
 • Backend: PHP REST API
@@ -36,6 +42,16 @@ medio di risoluzione
 • Documentazione API
 • Schema ER
 • Diagramma degli stati del ticket (può essere un disegno)
+
+```mermaid
+stateDiagram-v2
+    [*] --> Open
+    Open --> "In Progress"
+    "In Progress" --> "On Hold"
+    "On Hold" --> "In Progress"
+    "In Progress" --> Closed
+    Open --> Closed
+```
 
 # Funzionalità Bonus
 • Allegati ai ticket (upload file)
