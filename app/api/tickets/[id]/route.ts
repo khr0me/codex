@@ -1,47 +1,124 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { Ticket } from '../../../../types/ticket';
-import { mockTickets, mockComments, mockHistory } from '../../../../lib/mockData';
-
-// Use copies to avoid mutations
-let tickets = [...mockTickets];
-let comments = [...mockComments];
-let history = [...mockHistory];
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "../../../../lib/db";
+import {
+  tickets,
+  comments as commentsTable,
+  ticketHistory,
+  ratings as ratingsTable,
+} from "../../../../lib/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const ticket = tickets.find(t => t.id === params.id);
-  if (!ticket) {
-    return NextResponse.json({ error: 'Ticket not found' }, { status: 404 });
+  const { id } = await params;
+
+  const ticketRows = await db
+    .select()
+    .from(tickets)
+    .where(eq(tickets.id, id))
+    .limit(1);
+
+  if (ticketRows.length === 0) {
+    return NextResponse.json({ error: "Ticket not found" }, { status: 404 });
   }
 
-  const ticketComments = comments.filter(c => c.ticketId === params.id);
-  const ticketHistory = history.filter(h => h.ticketId === params.id);
+  const ticket = {
+    ...ticketRows[0],
+    attachments: ticketRows[0].attachments
+      ? JSON.parse(ticketRows[0].attachments)
+      : [],
+  };
+
+  const ticketComments = await db
+    .select()
+    .from(commentsTable)
+    .where(eq(commentsTable.ticketId, id));
+
+  const history = await db
+    .select()
+    .from(ticketHistory)
+    .where(eq(ticketHistory.ticketId, id));
+
+  const ticketRatings = await db
+    .select()
+    .from(ratingsTable)
+    .where(eq(ratingsTable.ticketId, id));
 
   return NextResponse.json({
-    ticket,
+    ticket: {
+      ...ticket,
+      rating: ticketRatings[0]?.score,
+      ratingComment: ticketRatings[0]?.comment,
+    },
     comments: ticketComments,
-    history: ticketHistory,
+    history,
   });
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const body = await request.json();
-  const ticketIndex = tickets.findIndex(t => t.id === params.id);
 
-  if (ticketIndex === -1) {
-    return NextResponse.json({ error: 'Ticket not found' }, { status: 404 });
+  const existing = await db
+    .select()
+    .from(tickets)
+    .where(eq(tickets.id, id))
+    .limit(1);
+
+  if (existing.length === 0) {
+    return NextResponse.json({ error: "Ticket not found" }, { status: 404 });
   }
 
-  tickets[ticketIndex] = {
-    ...tickets[ticketIndex],
-    ...body,
-    updatedAt: new Date().toISOString(),
-  };
+  const now = new Date().toISOString();
+  const updateData: Record<string, unknown> = { updatedAt: now };
+  const historyEntries: { action: string; details: string }[] = [];
 
-  return NextResponse.json(tickets[ticketIndex]);
+  if (body.status && body.status !== existing[0].status) {
+    updateData.status = body.status;
+    historyEntries.push({
+      action: "Status Changed",
+      details: `${existing[0].status} → ${body.status}`,
+    });
+  }
+  if (body.assigneeId !== undefined && body.assigneeId !== existing[0].assigneeId) {
+    updateData.assigneeId = body.assigneeId;
+    historyEntries.push({
+      action: "Assigned",
+      details: `Assigned to ${body.assigneeId || "unassigned"}`,
+    });
+  }
+  if (body.priority && body.priority !== existing[0].priority) {
+    updateData.priority = body.priority;
+    historyEntries.push({
+      action: "Priority Changed",
+      details: `${existing[0].priority} → ${body.priority}`,
+    });
+  }
+
+  const [updated] = await db
+    .update(tickets)
+    .set(updateData)
+    .where(eq(tickets.id, id))
+    .returning();
+
+  for (const entry of historyEntries) {
+    await db.insert(ticketHistory).values({
+      id: crypto.randomUUID(),
+      ticketId: id,
+      action: entry.action,
+      details: entry.details,
+      userId: body.userId || "system",
+      timestamp: now,
+    });
+  }
+
+  return NextResponse.json({
+    ...updated,
+    attachments: updated.attachments ? JSON.parse(updated.attachments) : [],
+  });
 }

@@ -35,7 +35,6 @@ export const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, initial }) => 
   };
 
   const handleDescriptionBlur = async () => {
-    // AI-assisted category suggestion
     if (description.trim()) {
       const suggested = await suggestCategory(description);
       setCategory(suggested as TicketCategory);
@@ -43,38 +42,40 @@ export const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, initial }) => 
   };
 
   const handleAutoSummarize = async () => {
-    // placeholder: call AI to summarize text
     const summary = await summarizeTicket(description);
     alert("AI suggested summary:\n" + summary);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="block">Title</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-1.5">Title</label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full border p-2"
+          className="block w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm placeholder-gray-400"
+          placeholder="Brief summary of the issue"
         />
       </div>
       <div>
-        <label className="block">Description</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-1.5">Description</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           onBlur={handleDescriptionBlur}
-          className="w-full border p-2"
+          rows={4}
+          className="block w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm placeholder-gray-400"
+          placeholder="Describe the issue in detail..."
         />
       </div>
-      <div className="flex gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <label>Category</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-1.5">Category</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value as TicketCategory)}
-            className="border p-2"
+            className="block w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm bg-white"
           >
             <option value="IT">IT</option>
             <option value="Administrative">Administrative</option>
@@ -82,13 +83,13 @@ export const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, initial }) => 
           </select>
         </div>
         <div>
-          <label>Priority</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-1.5">Priority</label>
           <select
             value={priority}
             onChange={(e) =>
               setPriority(e.target.value as TicketPriority)
             }
-            className="border p-2"
+            className="block w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm bg-white"
           >
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
@@ -98,7 +99,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, initial }) => 
         </div>
       </div>
       <div>
-        <label>Attachments</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-1.5">Attachments</label>
         <input
           type="file"
           multiple
@@ -107,18 +108,21 @@ export const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, initial }) => 
               setAttachments(Array.from(e.target.files));
             }
           }}
-          className="block"
+          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all"
         />
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-3 pt-2">
         <button
           type="button"
           onClick={handleAutoSummarize}
-          className="bg-gray-200 text-gray-800 px-4 py-2 rounded"
+          className="px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all"
         >
           AI Summary
         </button>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded">
+        <button
+          type="submit"
+          className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/25 transition-all"
+        >
           Submit
         </button>
       </div>

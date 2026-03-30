@@ -2,42 +2,47 @@
 import React, { useState, useContext } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useTranslation } from "react-i18next";
 import { AuthContext } from "../../../context/AuthContext";
 
-export default function LoginPage() {
+export default function RegisterPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useContext(AuthContext);
+  const { register } = useContext(AuthContext);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!email.trim() || !password.trim()) {
+    if (!name.trim() || !email.trim() || !password.trim()) {
       setError("Please fill in all fields.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
       return;
     }
 
     setLoading(true);
     try {
-      await login(email, password);
+      await register(name, email, password);
       router.push("/");
     } catch (err: any) {
-      setError(err.message || "Login failed. Please try again.");
+      setError(err.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-
-  const demoAccounts = [
-    { email: "admin@example.com", role: "Admin", color: "bg-purple-50 border-purple-200 text-purple-700", icon: "🛡️" },
-    { email: "operator@example.com", role: "Operator", color: "bg-blue-50 border-blue-200 text-blue-700", icon: "🎧" },
-    { email: "user@example.com", role: "User", color: "bg-green-50 border-green-200 text-green-700", icon: "👤" },
-  ];
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-blue-50 via-white to-indigo-50">
@@ -48,8 +53,6 @@ export default function LoginPage() {
             <circle cx="400" cy="400" r="300" stroke="white" strokeWidth="2" />
             <circle cx="400" cy="400" r="200" stroke="white" strokeWidth="2" />
             <circle cx="400" cy="400" r="100" stroke="white" strokeWidth="2" />
-            <path d="M400 100 L400 700" stroke="white" strokeWidth="1" />
-            <path d="M100 400 L700 400" stroke="white" strokeWidth="1" />
           </svg>
         </div>
         <div className="relative z-10 flex flex-col justify-center px-16 text-white">
@@ -60,13 +63,13 @@ export default function LoginPage() {
           </div>
           <h1 className="text-4xl font-bold mb-4">HealthTicket</h1>
           <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-            Streamlined healthcare support with AI-powered ticket management and real-time tracking.
+            Create your account to start managing healthcare support tickets efficiently.
           </p>
           <div className="space-y-4">
             {[
-              "Smart ticket routing & categorization",
-              "Real-time SLA monitoring",
-              "Comprehensive analytics dashboard",
+              "Track your support tickets",
+              "Rate operator assistance",
+              "Get real-time updates",
             ].map((feature, i) => (
               <div key={i} className="flex items-center space-x-3">
                 <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
@@ -90,8 +93,8 @@ export default function LoginPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900">Welcome back</h2>
-            <p className="mt-2 text-gray-500">Sign in to your account to continue</p>
+            <h2 className="text-3xl font-bold text-gray-900">Create account</h2>
+            <p className="mt-2 text-gray-500">Sign up to get started</p>
           </div>
 
           {error && (
@@ -104,6 +107,30 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Full Name
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  required
+                  className="block w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow sm:text-sm bg-white shadow-sm"
+                  placeholder="Your full name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+            </div>
+
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Email address
@@ -142,12 +169,36 @@ export default function LoginPage() {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   required
                   className="block w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow sm:text-sm bg-white shadow-sm"
-                  placeholder="Enter your password"
+                  placeholder="At least 6 characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  className="block w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow sm:text-sm bg-white shadow-sm"
+                  placeholder="Repeat your password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </div>
             </div>
@@ -163,59 +214,20 @@ export default function LoginPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Signing in...
+                  Creating account...
                 </>
               ) : (
-                "Sign in"
+                "Create account"
               )}
             </button>
           </form>
 
-          <p className="mt-4 text-center text-sm text-gray-500">
-            Don&apos;t have an account?{" "}
-            <Link href="/auth/register" className="font-semibold text-blue-600 hover:text-blue-500">
-              Sign up
+          <p className="mt-6 text-center text-sm text-gray-500">
+            Already have an account?{" "}
+            <Link href="/auth/login" className="font-semibold text-blue-600 hover:text-blue-500">
+              Sign in
             </Link>
           </p>
-
-          {/* Demo accounts */}
-          <div className="mt-8">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-3 text-gray-400 font-medium tracking-wider">
-                  Quick access — Demo accounts
-                </span>
-              </div>
-            </div>
-            <div className="mt-4 space-y-2">
-              {demoAccounts.map((account) => (
-                <button
-                  key={account.email}
-                  type="button"
-                  onClick={() => {
-                    setEmail(account.email);
-                    setPassword("demo");
-                    setError("");
-                  }}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border text-sm font-medium transition-all hover:shadow-sm ${account.color}`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <span className="text-lg">{account.icon}</span>
-                    <div className="text-left">
-                      <p className="font-semibold">{account.role}</p>
-                      <p className="text-xs opacity-75">{account.email}</p>
-                    </div>
-                  </div>
-                  <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>

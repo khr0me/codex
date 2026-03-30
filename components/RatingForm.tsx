@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface RatingFormProps {
   onSubmit: (score: number, comment?: string) => void;
@@ -8,6 +9,7 @@ export const RatingForm: React.FC<RatingFormProps> = ({ onSubmit }) => {
   const [score, setScore] = useState(0);
   const [hoveredScore, setHoveredScore] = useState(0);
   const [comment, setComment] = useState("");
+  const { t } = useTranslation();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,9 +25,7 @@ export const RatingForm: React.FC<RatingFormProps> = ({ onSubmit }) => {
     onMouseLeave: () => void;
   }) => (
     <svg
-      className={`w-8 h-8 cursor-pointer transition-colors ${
-        filled ? "text-yellow-400" : "text-gray-300"
-      }`}
+      className={`w-8 h-8 cursor-pointer transition-all duration-150 ${filled ? "text-yellow-400 scale-110" : "text-gray-300 hover:text-yellow-300"}`}
       fill="currentColor"
       viewBox="0 0 20 20"
       onClick={onClick}
@@ -37,16 +37,16 @@ export const RatingForm: React.FC<RatingFormProps> = ({ onSubmit }) => {
   );
 
   return (
-    <div className="bg-white p-6 rounded-lg border border-gray-200">
-      <h3 className="text-lg font-medium text-gray-900 mb-4">Rate Your Experience</h3>
-      <p className="text-sm text-gray-600 mb-6">
-        How would you rate the operator's assistance?
+    <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-100">
+      <h3 className="text-lg font-bold text-gray-900 mb-1">{t("rating.title")}</h3>
+      <p className="text-sm text-gray-500 mb-6">
+        {t("rating.subtitle")}
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            Rating
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+            {t("rating.ratingLabel")}
           </label>
           <div className="flex space-x-1">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -60,29 +60,29 @@ export const RatingForm: React.FC<RatingFormProps> = ({ onSubmit }) => {
             ))}
           </div>
           {score > 0 && (
-            <p className="mt-2 text-sm text-gray-600">
-              {score} star{score !== 1 ? 's' : ''} - {
-                score === 1 ? 'Poor' :
-                score === 2 ? 'Fair' :
-                score === 3 ? 'Good' :
-                score === 4 ? 'Very Good' :
-                'Excellent'
+            <p className="mt-2 text-sm font-medium text-gray-600">
+              {score} {score !== 1 ? t("rating.stars") : t("rating.star")} — {
+                score === 1 ? t("rating.poor") :
+                score === 2 ? t("rating.fair") :
+                score === 3 ? t("rating.good") :
+                score === 4 ? t("rating.veryGood") :
+                t("rating.excellent")
               }
             </p>
           )}
         </div>
 
         <div>
-          <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-2">
-            Additional Comments (Optional)
+          <label htmlFor="rating-comment" className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+            {t("rating.commentsLabel")}
           </label>
           <textarea
-            id="comment"
-            rows={4}
+            id="rating-comment"
+            rows={3}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            placeholder="Tell us more about your experience..."
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm placeholder-gray-400"
+            placeholder={t("rating.commentsPlaceholder")}
           />
         </div>
 
@@ -90,9 +90,9 @@ export const RatingForm: React.FC<RatingFormProps> = ({ onSubmit }) => {
           <button
             type="submit"
             disabled={score === 0}
-            className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg shadow-green-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            Submit Rating
+            {t("rating.submit")}
           </button>
         </div>
       </form>
