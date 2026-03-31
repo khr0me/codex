@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "HealthTicket — Healthcare Support System",
-  description: "AI-powered healthcare ticketing system for efficient support management",
+  description: "Healthcare ticketing system for efficient support management",
 };
 
 export default function RootLayout({

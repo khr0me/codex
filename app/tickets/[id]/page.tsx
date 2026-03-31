@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { fetchTicket, updateTicket } from "../../../lib/api";
 import { Ticket, Comment, TicketHistory } from "../../../types/ticket";
 import { CommentThread } from "../../../components/CommentThread";
@@ -36,6 +37,7 @@ export default function TicketDetailPage() {
   const { role, user } = useContext(AuthContext);
   const [newStatus, setNewStatus] = useState<string>("");
   const [assignee, setAssignee] = useState<string>("");
+  const { t } = useTranslation();
 
   const loadTicket = useCallback(async () => {
     if (!id) return;
@@ -58,7 +60,7 @@ export default function TicketDetailPage() {
       setTicket({ ...ticket, status: newStatus as any, assigneeId: assignee });
     } catch (err) {
       console.error(err);
-      alert("Failed to update ticket");
+      alert(t("ticketDetail.failedUpdate"));
     }
   };
 
@@ -68,7 +70,7 @@ export default function TicketDetailPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center">
       <div className="text-center">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto"></div>
-        <p className="mt-4 text-sm text-gray-500">Loading ticket...</p>
+        <p className="mt-4 text-sm text-gray-500">{t("ticketDetail.loadingTicket")}</p>
       </div>
     </div>
   );
@@ -80,10 +82,20 @@ export default function TicketDetailPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-6">
-          <Link href="/tickets" className="hover:text-blue-600 transition-colors">Tickets</Link>
+          <Link href="/tickets" className="hover:text-blue-600 transition-colors">{t("ticketDetail.breadcrumb")}</Link>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
           <span className="text-gray-900 font-medium">#{ticket.id}</span>
         </nav>
+
+        <Link
+          href="/tickets"
+          className="inline-flex items-center space-x-2 text-sm font-medium text-blue-600 hover:text-blue-700 mb-4 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span>{t("ticketDetail.backToTickets", "Back to all tickets")}</span>
+        </Link>
 
         <div className="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
           {/* Header */}
@@ -92,19 +104,19 @@ export default function TicketDetailPage() {
               <div className="flex-1 min-w-0">
                 <h1 className="text-2xl font-bold text-gray-900 leading-tight">{ticket.title}</h1>
                 <p className="text-sm text-gray-500 mt-1.5">
-                  Created {new Date(ticket.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
+                  {t("ticketDetail.created")} {new Date(ticket.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
                 <span className={`inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-lg text-sm font-semibold ${getStatusStyle(ticket.status)}`}>
-                  {ticket.status}
+                  {t(`status.${ticket.status}`)}
                 </span>
                 {isOverdue && (
                   <span className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-lg text-sm font-semibold bg-red-100 text-red-700 ring-1 ring-red-600/20">
                     <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    SLA Breached
+                    {t("ticketDetail.slaBreach")}
                   </span>
                 )}
               </div>
@@ -116,29 +128,29 @@ export default function TicketDetailPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
               {/* Details card */}
               <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Details</h3>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">{t("ticketDetail.details")}</h3>
                 <dl className="space-y-3">
                   <div className="flex items-center justify-between">
                     <dt className="text-sm text-gray-500 flex items-center">
                       <svg className="w-4 h-4 mr-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" /></svg>
-                      Category
+                      {t("ticketDetail.categoryLabel")}
                     </dt>
-                    <dd className="text-sm font-semibold text-gray-900 bg-white px-2.5 py-1 rounded-lg border border-gray-200">{ticket.category}</dd>
+                    <dd className="text-sm font-semibold text-gray-900 bg-white px-2.5 py-1 rounded-lg border border-gray-200">{t(`category.${ticket.category}`)}</dd>
                   </div>
                   <div className="flex items-center justify-between">
                     <dt className="text-sm text-gray-500 flex items-center">
                       <svg className="w-4 h-4 mr-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                      Priority
+                      {t("ticketDetail.priorityLabel")}
                     </dt>
                     <dd className={`inline-flex items-center text-sm font-semibold px-2.5 py-1 rounded-lg ${pStyle.bg} ${pStyle.text}`}>
                       <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${pStyle.dot}`} />
-                      {ticket.priority}
+                      {t(`priority.${ticket.priority}`)}
                     </dd>
                   </div>
                   <div className="flex items-center justify-between">
                     <dt className="text-sm text-gray-500 flex items-center">
                       <svg className="w-4 h-4 mr-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                      Last Updated
+                      {t("ticketDetail.lastUpdated")}
                     </dt>
                     <dd className="text-sm font-medium text-gray-700">{new Date(ticket.updatedAt).toLocaleString()}</dd>
                   </div>
@@ -147,7 +159,7 @@ export default function TicketDetailPage() {
 
               {/* Description card */}
               <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Description</h3>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">{t("ticketDetail.descriptionLabel")}</h3>
                 <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{ticket.description}</p>
               </div>
             </div>
@@ -157,30 +169,30 @@ export default function TicketDetailPage() {
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl mb-8 border border-blue-100">
                 <h3 className="text-sm font-semibold text-blue-900 mb-4 flex items-center">
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                  Update Ticket
+                  {t("ticketDetail.updateTicket")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">Status</label>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t("ticketDetail.status")}</label>
                     <select
                       value={newStatus}
                       onChange={(e) => setNewStatus(e.target.value)}
                       className="block w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm"
                     >
-                      <option value="Open">Open</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="On Hold">On Hold</option>
-                      <option value="Closed">Closed</option>
+                      <option value="Open">{t("status.Open")}</option>
+                      <option value="In Progress">{t("status.In Progress")}</option>
+                      <option value="On Hold">{t("status.On Hold")}</option>
+                      <option value="Closed">{t("status.Closed")}</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">Assignee ID</label>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t("ticketDetail.assignee")}</label>
                     <input
                       type="text"
                       value={assignee}
                       onChange={(e) => setAssignee(e.target.value)}
                       className="block w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm"
-                      placeholder="Assignee ID"
+                      placeholder={t("ticketDetail.assigneePlaceholder")}
                     />
                   </div>
                   <div className="flex items-end">
@@ -188,7 +200,7 @@ export default function TicketDetailPage() {
                       onClick={handleUpdate}
                       className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2.5 rounded-xl font-semibold transition-all shadow-md shadow-blue-500/25 text-sm"
                     >
-                      Update
+                      {t("ticketDetail.update")}
                     </button>
                   </div>
                 </div>
@@ -200,7 +212,7 @@ export default function TicketDetailPage() {
               <div className="mb-8">
                 <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
                   <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
-                  Attachments ({ticket.attachments.length})
+                  {t("ticketDetail.attachmentsTitle")} ({ticket.attachments.length})
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {ticket.attachments.map((url, i) => (
@@ -216,7 +228,7 @@ export default function TicketDetailPage() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                         </svg>
                       </div>
-                      <span className="text-sm text-gray-700 group-hover:text-blue-700 font-medium">Attachment {i + 1}</span>
+                      <span className="text-sm text-gray-700 group-hover:text-blue-700 font-medium">{t("ticketDetail.attachment")} {i + 1}</span>
                     </a>
                   ))}
                 </div>
@@ -227,7 +239,7 @@ export default function TicketDetailPage() {
             <div className="border-t border-gray-100 pt-8">
               <h2 className="text-lg font-bold text-gray-900 mb-5 flex items-center">
                 <svg className="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-                Conversation
+                {t("ticketDetail.conversation")}
               </h2>
               <CommentThread
                 comments={comments}
@@ -241,9 +253,10 @@ export default function TicketDetailPage() {
                       internal,
                     }),
                   });
-                  loadTicket();
+                  await loadTicket();
                 }}
                 isOperator={role === "operator" || role === "admin"}
+                canComment={!!user && (user.id === ticket.requesterId || role === "operator" || role === "admin")}
               />
             </div>
 
@@ -252,7 +265,7 @@ export default function TicketDetailPage() {
               <div className="border-t border-gray-100 pt-8 mt-8">
                 <h2 className="text-lg font-bold text-gray-900 mb-5 flex items-center">
                   <svg className="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  History
+                  {t("ticketDetail.history")}
                 </h2>
                 <div className="relative">
                   <div className="absolute left-4 top-0 bottom-0 w-px bg-gray-200" />
@@ -282,7 +295,7 @@ export default function TicketDetailPage() {
               <div className="border-t border-gray-100 pt-8 mt-8">
                 <h2 className="text-lg font-bold text-gray-900 mb-5 flex items-center">
                   <svg className="w-5 h-5 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                  Rate the Operator
+                  {t("ticketDetail.rateOperator")}
                 </h2>
                 <RatingForm
                   onSubmit={async (score, comment) => {

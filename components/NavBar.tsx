@@ -7,16 +7,19 @@ import { useTranslation } from "react-i18next";
 import { AuthContext } from "../context/AuthContext";
 
 export const NavBar: React.FC = () => {
-  const { role, logout } = useContext(AuthContext);
+  const { role, user, logout } = useContext(AuthContext);
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { t, i18n } = useTranslation();
 
   const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === "it" ? "en" : "it");
+    const newLang = i18n.language === "it" ? "en" : "it";
+    i18n.changeLanguage(newLang);
+    localStorage.setItem("i18nextLng", newLang);
   };
 
   const navLinks = [
+    { href: "/guide", label: t("nav.guide", "Guide"), icon: guideIcon },
     ...(role ? [{ href: "/tickets", label: t("nav.tickets"), icon: ticketIcon }] : []),
     ...(role ? [{ href: "/tickets/new", label: t("nav.newTicket"), icon: plusIcon }] : []),
     ...(role === "admin" ? [{ href: "/admin/dashboard", label: t("nav.dashboard"), icon: chartIcon }] : []),
@@ -73,12 +76,15 @@ export const NavBar: React.FC = () => {
             {role ? (
               <>
                 <div className="hidden sm:flex items-center space-x-3">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-white/20 text-white capitalize backdrop-blur">
-                    {role === "admin" && adminBadge}
-                    {role === "operator" && operatorBadge}
-                    {role === "user" && userBadge}
-                    {role}
-                  </span>
+                  <Link href="/profile" className="flex items-center space-x-2 hover:bg-white/10 px-2.5 py-1 rounded-lg transition-colors">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-white/20 text-white capitalize backdrop-blur">
+                      {role === "admin" && adminBadge}
+                      {role === "operator" && operatorBadge}
+                      {role === "user" && userBadge}
+                      {role}
+                    </span>
+                    <span className="text-sm font-medium text-white">{user?.name}</span>
+                  </Link>
                 </div>
                 <button
                   onClick={logout}
@@ -151,6 +157,12 @@ export const NavBar: React.FC = () => {
     </nav>
   );
 };
+
+const guideIcon = (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
 
 const ticketIcon = (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

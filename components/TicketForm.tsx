@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { TicketCategory, TicketPriority } from "../types/ticket";
 import { suggestCategory, summarizeTicket } from "../utils/ai";
 
@@ -28,6 +29,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, initial }) => 
     initial?.priority || "Low"
   );
   const [attachments, setAttachments] = useState<File[]>([]);
+  const { t } = useTranslation();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,41 +51,41 @@ export const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, initial }) => 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1.5">Title</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t("tickets.titleField")}</label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="block w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm placeholder-gray-400"
-          placeholder="Brief summary of the issue"
+          placeholder={t("tickets.titlePlaceholder")}
         />
       </div>
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1.5">Description</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t("tickets.description")}</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           onBlur={handleDescriptionBlur}
           rows={4}
           className="block w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm placeholder-gray-400"
-          placeholder="Describe the issue in detail..."
+          placeholder={t("tickets.descriptionPlaceholder")}
         />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1.5">Category</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t("tickets.category")}</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value as TicketCategory)}
             className="block w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm bg-white"
           >
-            <option value="IT">IT</option>
-            <option value="Administrative">Administrative</option>
-            <option value="Other">Other</option>
+            <option value="IT">{t("category.IT")}</option>
+            <option value="Administrative">{t("category.Administrative")}</option>
+            <option value="Other">{t("category.Other")}</option>
           </select>
         </div>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1.5">Priority</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t("tickets.priority")}</label>
           <select
             value={priority}
             onChange={(e) =>
@@ -91,15 +93,15 @@ export const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, initial }) => 
             }
             className="block w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm bg-white"
           >
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-            <option value="Critical">Critical</option>
+            <option value="Low">{t("priority.Low")}</option>
+            <option value="Medium">{t("priority.Medium")}</option>
+            <option value="High">{t("priority.High")}</option>
+            <option value="Critical">{t("priority.Critical")}</option>
           </select>
         </div>
       </div>
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1.5">Attachments</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t("tickets.attachments")}</label>
         <input
           type="file"
           multiple
@@ -117,13 +119,13 @@ export const TicketForm: React.FC<TicketFormProps> = ({ onSubmit, initial }) => 
           onClick={handleAutoSummarize}
           className="px-4 py-2.5 border border-gray-300 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all"
         >
-          AI Summary
+          {t("tickets.aiSummary")}
         </button>
         <button
           type="submit"
           className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/25 transition-all"
         >
-          Submit
+          {t("tickets.submit")}
         </button>
       </div>
     </form>

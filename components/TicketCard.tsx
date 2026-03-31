@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Ticket } from "../types/ticket";
 
 interface TicketCardProps {
@@ -28,6 +29,7 @@ const getPriorityStyle = (priority: string) => {
 
 export const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
   const priorityStyle = getPriorityStyle(ticket.priority);
+  const { t } = useTranslation();
 
   return (
     <Link
@@ -40,7 +42,7 @@ export const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
           {ticket.title}
         </h3>
         <span className={`inline-flex items-center whitespace-nowrap flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold ${getStatusStyle(ticket.status)}`}>
-          {ticket.status}
+          {t(`status.${ticket.status}`)}
         </span>
       </div>
 
@@ -53,11 +55,11 @@ export const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
           <svg className="w-3 h-3 mr-1 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
           </svg>
-          {ticket.category}
+          {t(`category.${ticket.category}`)}
         </span>
         <span className={`inline-flex items-center px-2 py-1 rounded-md font-medium ${priorityStyle.color}`}>
           <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${priorityStyle.dot}`} />
-          {ticket.priority}
+          {t(`priority.${ticket.priority}`)}
         </span>
         {ticket.attachments && ticket.attachments.length > 0 && (
           <span className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-gray-500 font-medium">

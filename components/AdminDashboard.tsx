@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Pie, Bar } from "react-chartjs-2";
 
@@ -22,6 +23,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   openTickets,
   slaBreaches,
 }) => {
+  const { t } = useTranslation();
+
   const categoryData = {
     labels: Object.keys(ticketsByCategory),
     datasets: [
@@ -38,7 +41,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     labels: busiestOperators.map(op => op.name),
     datasets: [
       {
-        label: 'Tickets Assigned',
+        label: t("admin.ticketsAssigned"),
         data: busiestOperators.map(op => op.count),
         backgroundColor: 'rgba(59, 130, 246, 0.8)',
         borderColor: '#3b82f6',
@@ -73,7 +76,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const stats = [
     {
-      label: "Total Tickets",
+      label: t("admin.totalTickets"),
       value: totalTickets,
       gradient: "from-blue-500 to-blue-600",
       bgLight: "bg-blue-50",
@@ -84,7 +87,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       ),
     },
     {
-      label: "Open Tickets",
+      label: t("admin.openTickets"),
       value: openTickets,
       gradient: "from-emerald-500 to-emerald-600",
       bgLight: "bg-emerald-50",
@@ -95,7 +98,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       ),
     },
     {
-      label: "Avg Resolution",
+      label: t("admin.avgResolution"),
       value: `${meanResolutionHours.toFixed(1)}h`,
       gradient: "from-amber-500 to-amber-600",
       bgLight: "bg-amber-50",
@@ -106,7 +109,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       ),
     },
     {
-      label: "SLA Breaches",
+      label: t("admin.slaBreaches"),
       value: slaBreaches,
       gradient: "from-red-500 to-red-600",
       bgLight: "bg-red-50",
@@ -122,8 +125,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Overview of your healthcare support system</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t("admin.title")}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t("admin.subtitle")}</p>
         </div>
 
         {/* Stat cards */}
@@ -146,26 +149,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">Tickets by Category</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-4">{t("admin.categoriesTitle")}</h3>
             <Pie data={categoryData} options={pieOptions} />
           </div>
 
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">Busiest Operators</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-4">{t("admin.busiestOperators")}</h3>
             <Bar data={operatorData} options={barOptions} />
           </div>
         </div>
 
         {/* Activity */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4">Recent Activity</h2>
+          <h2 className="text-sm font-semibold text-gray-900 mb-4">{t("admin.recentActivity")}</h2>
           <div className="text-center py-8">
             <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
               <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <p className="text-gray-500 text-sm">Recent ticket updates and assignments will appear here.</p>
+            <p className="text-gray-500 text-sm">{t("admin.recentActivityDesc")}</p>
           </div>
         </div>
       </div>

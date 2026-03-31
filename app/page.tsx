@@ -1,8 +1,11 @@
 "use client";
 import Link from "next/link";
+import { useContext } from "react";
 import { useTranslation } from "react-i18next";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Home() {
+  const { role } = useContext(AuthContext);
   const { t } = useTranslation();
 
   return (
@@ -33,21 +36,27 @@ export default function Home() {
               {t("home.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link
-                href="/auth/login"
-                className="inline-flex items-center justify-center px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-xl shadow-blue-500/25 text-sm"
-              >
-                {t("home.getStarted")}
-                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </Link>
-              <Link
-                href="/tickets"
-                className="inline-flex items-center justify-center px-8 py-3.5 bg-white text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all shadow-lg border border-gray-200 text-sm"
-              >
-                {t("home.viewTickets")}
-              </Link>
+              {role ? (
+                <Link
+                  href="/tickets"
+                  className="inline-flex items-center justify-center px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-xl shadow-blue-500/25 text-sm"
+                >
+                  {t("home.viewTickets")}
+                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className="inline-flex items-center justify-center px-8 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-xl shadow-blue-500/25 text-sm"
+                >
+                  {t("home.getStarted")}
+                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -74,7 +83,7 @@ export default function Home() {
             {
               icon: (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
                 </svg>
               ),
               color: "emerald",
