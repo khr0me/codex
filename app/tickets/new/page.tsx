@@ -23,12 +23,24 @@ export default function NewTicketPage() {
     if (submitting) return;
     setSubmitting(true);
     try {
+      const uploadedUrls: string[] = [];
+      for (const file of attachments) {
+        const form = new FormData();
+        form.append("file", file);
+        const res = await fetch("/api/uploads", { method: "POST", body: form });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || "Upload failed");
+        }
+        const data = await res.json();
+        uploadedUrls.push(data.url);
+      }
       await createTicket({
         title,
         description,
         category,
         priority,
-        attachments: [],
+        attachments: uploadedUrls,
         requesterId: user?.id || "anonymous",
       });
       router.push("/tickets");
@@ -42,7 +54,13 @@ export default function NewTicketPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setAttachments(Array.from(e.target.files));
+      const allowed = Array.from(e.target.files).filter((f) =>
+        ["image/png", "image/jpeg", "image/jpg"].includes(f.type)
+      );
+      if (allowed.length < e.target.files.length) {
+        alert(t("tickets.onlyImagesAllowed", "Only PNG, JPG, and JPEG images are allowed."));
+      }
+      setAttachments(allowed);
     }
   };
 
@@ -142,18 +160,24 @@ export default function NewTicketPage() {
                   <div className="mt-2">
                     <label htmlFor="file-upload" className="cursor-pointer">
                       <span className="text-sm font-medium text-blue-600 hover:text-blue-500">{t("tickets.uploadFiles")}</span>
-                      <input id="file-upload" type="file" multiple className="sr-only" onChange={handleFileChange} />
+                      <input id="file-upload" type="file" multiple accept=".png,.jpg,.jpeg,image/png,image/jpeg" className="sr-only" onChange={handleFileChange} />
                     </label>
-                    <p className="text-xs text-gray-400 mt-1">{t("tickets.dragDrop")}</p>
+                    <p className="text-xs text-gray-400 mt-1">{t("tickets.imageOnly", "PNG, JPG, JPEG only")}</p>
                   </div>
                 </div>
               </div>
               {attachments.length > 0 && (
-                <div className="mt-3 space-y-1">
+                <div className="mt-3 grid grid-cols-3 gap-2">
                   {attachments.map((file, index) => (
-                    <div key={index} className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
-                      <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
-                      {file.name}
+                    <div key={index} className="relative group rounded-lg overflow-hidden border border-gray-200 bg-gray-50 aspect-square">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={file.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 px-2 py-1">
+                        <p className="text-xs text-white truncate">{file.name}</p>
+                      </div>
                     </div>
                   ))}
                 </div>

@@ -211,24 +211,23 @@ export default function TicketDetailPage() {
             {ticket.attachments && ticket.attachments.length > 0 && (
               <div className="mb-8">
                 <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
-                  <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+                  <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                   {t("ticketDetail.attachmentsTitle")} ({ticket.attachments.length})
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {ticket.attachments.map((url, i) => (
                     <a
                       key={i}
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-blue-50 transition-colors border border-gray-100 hover:border-blue-200 group"
+                      className="block rounded-xl overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors group aspect-square bg-gray-50"
                     >
-                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-200 transition-colors">
-                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                        </svg>
-                      </div>
-                      <span className="text-sm text-gray-700 group-hover:text-blue-700 font-medium">{t("ticketDetail.attachment")} {i + 1}</span>
+                      <img
+                        src={url}
+                        alt={`${t("ticketDetail.attachment")} ${i + 1}`}
+                        className="w-full h-full object-cover group-hover:opacity-90 transition-opacity"
+                      />
                     </a>
                   ))}
                 </div>
