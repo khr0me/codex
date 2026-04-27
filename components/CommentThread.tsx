@@ -64,9 +64,9 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
                     c.internal ? "bg-amber-200 text-amber-800" : "bg-blue-100 text-blue-600"
                   }`}>
-                    {c.authorId.charAt(0).toUpperCase()}
+                    {(c.authorName || c.authorId).charAt(0).toUpperCase()}
                   </div>
-                  <span className="text-sm font-semibold text-gray-900">{c.authorId}</span>
+                  <span className="text-sm font-semibold text-gray-900">{c.authorName || c.authorId}</span>
                   {c.internal && (
                     <span className="px-2 py-0.5 text-xs font-semibold bg-amber-100 text-amber-700 rounded-md ring-1 ring-amber-600/20">
                       {t("comments.internalBadge")}

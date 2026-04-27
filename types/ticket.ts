@@ -28,6 +28,7 @@ export interface Comment {
   id: string;
   ticketId: string;
   authorId: string;
+  authorName?: string | null;
   content: string;
   createdAt: string;
   internal?: boolean; // operator-only comments

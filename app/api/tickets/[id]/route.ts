@@ -5,6 +5,7 @@ import {
   comments as commentsTable,
   ticketHistory,
   ratings as ratingsTable,
+  users,
 } from "../../../../lib/schema";
 import { eq } from "drizzle-orm";
 
@@ -32,8 +33,17 @@ export async function GET(
   };
 
   const ticketComments = await db
-    .select()
+    .select({
+      id: commentsTable.id,
+      ticketId: commentsTable.ticketId,
+      authorId: commentsTable.authorId,
+      authorName: users.name,
+      content: commentsTable.content,
+      internal: commentsTable.internal,
+      createdAt: commentsTable.createdAt,
+    })
     .from(commentsTable)
+    .leftJoin(users, eq(commentsTable.authorId, users.id))
     .where(eq(commentsTable.ticketId, id));
 
   const history = await db
