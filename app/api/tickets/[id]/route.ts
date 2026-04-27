@@ -120,10 +120,27 @@ export async function PATCH(
     });
   }
   if (body.assigneeId !== undefined && body.assigneeId !== existing[0].assigneeId) {
-    updateData.assigneeId = body.assigneeId;
+    // Convert empty string to null
+    let assigneeId = body.assigneeId && body.assigneeId.trim() ? body.assigneeId : null;
+    
+    // If assigneeId is provided (not null), validate it exists in the users table
+    if (assigneeId) {
+      const userExists = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.id, assigneeId))
+        .limit(1);
+      
+      // If user doesn't exist, set to null
+      if (userExists.length === 0) {
+        assigneeId = null;
+      }
+    }
+    
+    updateData.assigneeId = assigneeId;
     historyEntries.push({
       action: "Assigned",
-      details: `Assigned to ${body.assigneeId || "unassigned"}`,
+      details: `Assigned to ${assigneeId ? assigneeId : "unassigned"}`,
     });
   }
   if (body.priority && body.priority !== existing[0].priority) {
@@ -146,7 +163,7 @@ export async function PATCH(
       ticketId: id,
       action: entry.action,
       details: entry.details,
-      userId: body.userId || "system",
+      userId: body.userId || null,
       timestamp: now,
     });
   }

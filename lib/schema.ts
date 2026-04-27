@@ -79,9 +79,7 @@ export const ticketHistory = sqliteTable("ticket_history", {
     .references(() => tickets.id),
   action: text("action").notNull(),
   details: text("details").notNull(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id),
+  userId: text("user_id").references(() => users.id),
   timestamp: text("timestamp")
     .notNull()
     .$defaultFn(() => new Date().toISOString()),

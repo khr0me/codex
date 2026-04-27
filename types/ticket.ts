@@ -40,7 +40,7 @@ export interface TicketHistory {
   ticketId: string;
   action: string; // e.g., "Created", "Assigned", "Status Changed"
   details: string;
-  userId: string;
+  userId?: string | null;
   userName?: string | null;
   timestamp: string;
 }

@@ -176,7 +176,7 @@ export default function TicketDetailPage() {
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                   {t("ticketDetail.updateTicket")}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t("ticketDetail.status")}</label>
                     <select
@@ -190,7 +190,7 @@ export default function TicketDetailPage() {
                       <option value="Closed">{t("status.Closed")}</option>
                     </select>
                   </div>
-                  <div>
+                  {/* <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-1.5">{t("ticketDetail.assignee")}</label>
                     <input
                       type="text"
@@ -199,7 +199,7 @@ export default function TicketDetailPage() {
                       className="block w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm"
                       placeholder={t("ticketDetail.assigneePlaceholder")}
                     />
-                  </div>
+                  </div> */}
                   <div className="flex items-end">
                     <button
                       onClick={handleUpdate}
