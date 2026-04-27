@@ -79,6 +79,15 @@ export default function LoginPage() {
       {/* Right side - form */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-16 py-12">
         <div className="w-full max-w-md">
+          <div className="mb-6">
+            <Link href="/" className="inline-flex items-center space-x-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span>{t("common.backHome", "Back to Home")}</span>
+            </Link>
+          </div>
+
           <div className="text-center mb-8">
             <div className="lg:hidden w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
               <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

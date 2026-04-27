@@ -1,4 +1,7 @@
 {
+  "common": {
+    "backHome": "Torna alla Home"
+  },
   "nav": {
     "tickets": "Ticket",
     "newTicket": "Nuovo Ticket",
@@ -93,6 +96,7 @@
   "ticketDetail": {
     "breadcrumb": "Ticket",
     "created": "Creato il",
+    "createdBy": "Creato da",
     "slaBreach": "SLA Violato",
     "details": "Dettagli",
     "categoryLabel": "Categoria",

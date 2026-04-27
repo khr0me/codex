@@ -16,8 +16,23 @@ export async function GET(
   const { id } = await params;
 
   const ticketRows = await db
-    .select()
+    .select({
+      id: tickets.id,
+      title: tickets.title,
+      description: tickets.description,
+      category: tickets.category,
+      priority: tickets.priority,
+      status: tickets.status,
+      requesterId: tickets.requesterId,
+      requesterName: users.name,
+      assigneeId: tickets.assigneeId,
+      slaHours: tickets.slaHours,
+      attachments: tickets.attachments,
+      createdAt: tickets.createdAt,
+      updatedAt: tickets.updatedAt,
+    })
     .from(tickets)
+    .leftJoin(users, eq(tickets.requesterId, users.id))
     .where(eq(tickets.id, id))
     .limit(1);
 
@@ -47,8 +62,17 @@ export async function GET(
     .where(eq(commentsTable.ticketId, id));
 
   const history = await db
-    .select()
+    .select({
+      id: ticketHistory.id,
+      ticketId: ticketHistory.ticketId,
+      action: ticketHistory.action,
+      details: ticketHistory.details,
+      userId: ticketHistory.userId,
+      userName: users.name,
+      timestamp: ticketHistory.timestamp,
+    })
     .from(ticketHistory)
+    .leftJoin(users, eq(ticketHistory.userId, users.id))
     .where(eq(ticketHistory.ticketId, id));
 
   const ticketRatings = await db

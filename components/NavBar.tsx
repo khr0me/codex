@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "../context/AuthContext";
@@ -9,6 +9,7 @@ import { AuthContext } from "../context/AuthContext";
 export const NavBar: React.FC = () => {
   const { role, user, logout } = useContext(AuthContext);
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { t, i18n } = useTranslation();
 
@@ -16,6 +17,11 @@ export const NavBar: React.FC = () => {
     const newLang = i18n.language === "it" ? "en" : "it";
     i18n.changeLanguage(newLang);
     localStorage.setItem("i18nextLng", newLang);
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
   };
 
   const navLinks = [
@@ -87,7 +93,7 @@ export const NavBar: React.FC = () => {
                   </Link>
                 </div>
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-sm font-medium transition-all border border-white/20"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

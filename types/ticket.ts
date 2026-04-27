@@ -17,6 +17,7 @@ export interface Ticket {
   createdAt: string;
   updatedAt: string;
   requesterId: string;
+  requesterName?: string; // creator's name
   assigneeId?: string;
   attachments?: string[]; // urls
   slaHours?: number; // SLA in hours
@@ -40,6 +41,7 @@ export interface TicketHistory {
   action: string; // e.g., "Created", "Assigned", "Status Changed"
   details: string;
   userId: string;
+  userName?: string | null;
   timestamp: string;
 }
 

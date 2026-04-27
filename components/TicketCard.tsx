@@ -50,7 +50,7 @@ export const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
       <p className="text-sm text-gray-500 mb-4 line-clamp-2 leading-relaxed">{ticket.description}</p>
 
       {/* Meta row */}
-      <div className="flex flex-wrap items-center gap-2 text-xs">
+      <div className="flex flex-wrap items-center gap-2 text-xs mb-3">
         <span className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-gray-600 font-medium">
           <svg className="w-3 h-3 mr-1 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
@@ -69,7 +69,14 @@ export const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
             {ticket.attachments.length}
           </span>
         )}
-        <span className="ml-auto text-gray-400">
+      </div>
+
+      {/* Footer: creator name (left) and date (right) */}
+      <div className="flex items-center justify-between">
+        <span className="text-gray-500">
+          {ticket.requesterName || "Anonymous"}
+        </span>
+        <span className="text-gray-400">
           {new Date(ticket.createdAt).toLocaleDateString()}
         </span>
       </div>

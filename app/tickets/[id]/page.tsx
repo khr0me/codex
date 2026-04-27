@@ -107,18 +107,23 @@ export default function TicketDetailPage() {
                   {t("ticketDetail.created")} {new Date(ticket.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
-                <span className={`inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-lg text-sm font-semibold ${getStatusStyle(ticket.status)}`}>
-                  {t(`status.${ticket.status}`)}
-                </span>
-                {isOverdue && (
-                  <span className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-lg text-sm font-semibold bg-red-100 text-red-700 ring-1 ring-red-600/20">
-                    <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {t("ticketDetail.slaBreach")}
+              <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                <div className="flex flex-wrap justify-end gap-2">
+                  <span className={`inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-lg text-sm font-semibold ${getStatusStyle(ticket.status)}`}>
+                    {t(`status.${ticket.status}`)}
                   </span>
-                )}
+                  {isOverdue && (
+                    <span className="inline-flex items-center whitespace-nowrap px-3 py-1.5 rounded-lg text-sm font-semibold bg-red-100 text-red-700 ring-1 ring-red-600/20">
+                      <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {t("ticketDetail.slaBreach")}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-gray-500">
+                  {t("ticketDetail.createdBy", "Created by")} <span className="font-semibold text-gray-900">{ticket.requesterName || "Anonymous"}</span>
+                </p>
               </div>
             </div>
           </div>
@@ -279,7 +284,7 @@ export default function TicketDetailPage() {
                         <div className="bg-gray-50 rounded-xl p-3 flex-1 border border-gray-100">
                           <p className="text-sm font-medium text-gray-900">{entry.action}: {entry.details}</p>
                           <p className="text-xs text-gray-500 mt-1">
-                            {new Date(entry.timestamp).toLocaleString()} by <span className="font-medium">{entry.userId}</span>
+                            {new Date(entry.timestamp).toLocaleString()} by <span className="font-medium">{entry.userName || "Anonymous"}</span>
                           </p>
                         </div>
                       </div>

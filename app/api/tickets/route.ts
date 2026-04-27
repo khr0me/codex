@@ -1,10 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../lib/db";
-import { tickets, ticketHistory } from "../../../lib/schema";
-import { desc } from "drizzle-orm";
+import { tickets, ticketHistory, users } from "../../../lib/schema";
+import { desc, eq } from "drizzle-orm";
 
 export async function GET() {
-  const rows = await db.select().from(tickets).orderBy(desc(tickets.createdAt));
+  const rows = await db
+    .select({
+      id: tickets.id,
+      title: tickets.title,
+      description: tickets.description,
+      category: tickets.category,
+      priority: tickets.priority,
+      status: tickets.status,
+      requesterId: tickets.requesterId,
+      requesterName: users.name,
+      assigneeId: tickets.assigneeId,
+      slaHours: tickets.slaHours,
+      attachments: tickets.attachments,
+      createdAt: tickets.createdAt,
+      updatedAt: tickets.updatedAt,
+    })
+    .from(tickets)
+    .leftJoin(users, eq(tickets.requesterId, users.id))
+    .orderBy(desc(tickets.createdAt));
   // Parse attachments JSON
   const result = rows.map((t) => ({
     ...t,
@@ -37,6 +55,13 @@ export async function POST(request: NextRequest) {
     })
     .returning();
 
+  // Fetch the requester name
+  const requesterData = await db
+    .select({ name: users.name })
+    .from(users)
+    .where(eq(users.id, body.requesterId))
+    .limit(1);
+
   await db.insert(ticketHistory).values({
     id: crypto.randomUUID(),
     ticketId: id,
@@ -47,7 +72,11 @@ export async function POST(request: NextRequest) {
   });
 
   return NextResponse.json(
-    { ...newTicket, attachments: JSON.parse(newTicket.attachments || "[]") },
+    {
+      ...newTicket,
+      requesterName: requesterData[0]?.name || "Anonymous",
+      attachments: JSON.parse(newTicket.attachments || "[]"),
+    },
     { status: 201 }
   );
 }
