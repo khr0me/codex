@@ -46,7 +46,7 @@ export const NavBar: React.FC = () => {
                 </svg>
               </span>
               <span className="text-xl font-bold text-white tracking-tight hidden sm:block">
-                HealthTicket
+                NetSolve
               </span>
             </Link>
 

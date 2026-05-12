@@ -3,8 +3,19 @@ import { db } from "../../../lib/db";
 import { tickets, ticketHistory, users } from "../../../lib/schema";
 import { desc, eq } from "drizzle-orm";
 
-export async function GET() {
-  const rows = await db
+export async function GET(request: NextRequest) {
+  const userId = request.nextUrl.searchParams.get("userId");
+  const role = request.nextUrl.searchParams.get("role");
+
+  if (!userId || !role) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!["user", "operator", "admin"].includes(role)) {
+    return NextResponse.json({ error: "Invalid role" }, { status: 403 });
+  }
+
+  const baseQuery = db
     .select({
       id: tickets.id,
       title: tickets.title,
@@ -21,8 +32,13 @@ export async function GET() {
       updatedAt: tickets.updatedAt,
     })
     .from(tickets)
-    .leftJoin(users, eq(tickets.requesterId, users.id))
+    .leftJoin(users, eq(tickets.requesterId, users.id));
+
+  const rows = await (role === "admin" || role === "operator"
+    ? baseQuery
+    : baseQuery.where(eq(tickets.requesterId, userId)))
     .orderBy(desc(tickets.createdAt));
+
   // Parse attachments JSON
   const result = rows.map((t) => ({
     ...t,

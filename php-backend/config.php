@@ -1,6 +1,6 @@
 <?php
 /**
- * Database configuration for HealthTicket PHP backend.
+ * Database configuration for NetSolve PHP backend.
  * Uses Turso HTTP Pipeline API for remote libSQL database.
  *
  * Set environment variables TURSO_DATABASE_URL and TURSO_AUTH_TOKEN.

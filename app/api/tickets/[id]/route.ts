@@ -13,7 +13,17 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const userId = request.nextUrl.searchParams.get("userId");
+  const role = request.nextUrl.searchParams.get("role");
   const { id } = await params;
+
+  if (!userId || !role) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!["user", "operator", "admin"].includes(role)) {
+    return NextResponse.json({ error: "Invalid role" }, { status: 403 });
+  }
 
   const ticketRows = await db
     .select({
@@ -40,6 +50,10 @@ export async function GET(
     return NextResponse.json({ error: "Ticket not found" }, { status: 404 });
   }
 
+  if (role !== "admin" && role !== "operator" && ticketRows[0].requesterId !== userId) {
+    return NextResponse.json({ error: "Ticket not found" }, { status: 404 });
+  }
+
   const ticket = {
     ...ticketRows[0],
     attachments: ticketRows[0].attachments
@@ -47,7 +61,7 @@ export async function GET(
       : [],
   };
 
-  const ticketComments = await db
+  let ticketCommentsQuery = db
     .select({
       id: commentsTable.id,
       ticketId: commentsTable.ticketId,
@@ -60,6 +74,12 @@ export async function GET(
     .from(commentsTable)
     .leftJoin(users, eq(commentsTable.authorId, users.id))
     .where(eq(commentsTable.ticketId, id));
+
+  if (role !== "admin" && role !== "operator") {
+    ticketCommentsQuery = ticketCommentsQuery.where(eq(commentsTable.internal, false));
+  }
+
+  const ticketComments = await ticketCommentsQuery;
 
   const history = await db
     .select({
@@ -97,6 +117,16 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const body = await request.json();
+  const userId = body.userId;
+  const role = body.role;
+
+  if (!userId || !role) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!["operator", "admin"].includes(role)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const existing = await db
     .select()

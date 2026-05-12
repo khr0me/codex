@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../../lib/db";
-import { ratings } from "../../../../../lib/schema";
+import { ratings, tickets } from "../../../../../lib/schema";
 import { eq, and } from "drizzle-orm";
 
 export async function POST(
@@ -9,7 +9,29 @@ export async function POST(
 ) {
   const { id: ticketId } = await params;
   const body = await request.json();
-  const { userId, score, comment } = body;
+  const { userId, role, score, comment } = body;
+
+  if (!userId || !role) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!["user", "operator", "admin"].includes(role)) {
+    return NextResponse.json({ error: "Invalid role" }, { status: 403 });
+  }
+
+  const ticketRows = await db
+    .select({ requesterId: tickets.requesterId })
+    .from(tickets)
+    .where(eq(tickets.id, ticketId))
+    .limit(1);
+
+  if (ticketRows.length === 0) {
+    return NextResponse.json({ error: "Ticket not found" }, { status: 404 });
+  }
+
+  if (role !== "admin" && role !== "operator" && ticketRows[0].requesterId !== userId) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   if (!score || score < 1 || score > 5) {
     return NextResponse.json(
@@ -22,7 +44,7 @@ export async function POST(
   const existing = await db
     .select()
     .from(ratings)
-    .where(and(eq(ratings.ticketId, ticketId), eq(ratings.userId, userId || "anonymous")))
+    .where(and(eq(ratings.ticketId, ticketId), eq(ratings.userId, userId)))
     .limit(1);
 
   if (existing.length > 0) {
@@ -40,7 +62,7 @@ export async function POST(
     .values({
       id: crypto.randomUUID(),
       ticketId,
-      userId: userId || "anonymous",
+      userId,
       score,
       comment: comment || null,
     })

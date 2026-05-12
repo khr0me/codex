@@ -12,6 +12,7 @@ export default function TicketsPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [filter, setFilter] = useState<TicketStatus | "All">("All");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { role } = useContext(AuthContext);
   const router = useRouter();
   const { t } = useTranslation();
@@ -31,13 +32,21 @@ export default function TicketsPage() {
   ];
 
   useEffect(() => {
+    if (role === null) return;
+
     async function load() {
-      const data = await fetchTickets();
-      setTickets(data);
-      setLoading(false);
+      try {
+        const data = await fetchTickets();
+        setTickets(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to load tickets");
+      } finally {
+        setLoading(false);
+      }
     }
+
     load();
-  }, []);
+  }, [role]);
 
   const filteredTickets = filter === "All" ? tickets : tickets.filter(t => t.status === filter);
 
@@ -78,6 +87,11 @@ export default function TicketsPage() {
         </div>
 
         {/* Filters */}
+        {error && (
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+            {error}
+          </div>
+        )}
         <div className="mb-6">
           <div className="flex flex-wrap gap-2">
             {statusFilters.map((s) => (

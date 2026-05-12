@@ -5,10 +5,10 @@ import { useTranslation } from "react-i18next";
 const faqItems = [
   {
     questionKey: "guide.faq1Q",
-    questionFallback: "What is HealthTicket?",
+    questionFallback: "What is NetSolve?",
     answerKey: "guide.faq1A",
     answerFallback:
-      "It's a healthcare support ticketing system for managing IT and administrative requests.",
+      "It's a network support ticketing system for managing IT and administrative requests.",
   },
   {
     questionKey: "guide.faq2Q",
@@ -151,13 +151,13 @@ export default function GuidePage() {
         {/* Header */}
         <div className="text-center mb-16">
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 mb-4">
-            HealthTicket
+            NetSolve
           </span>
           <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
             {t("guide.title", "How It Works")}
           </h1>
           <p className="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
-            {t("guide.subtitle", "Learn how to use HealthTicket effectively")}
+            {t("guide.subtitle", "Learn how to use NetSolve effectively")}
           </p>
         </div>
 

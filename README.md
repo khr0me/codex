@@ -1,4 +1,4 @@
-HealthTicket is a React/Next.js frontend for a healthcare ticketing system. It provides user, operator and admin interfaces with AI-assisted ticket creation, comment threads, dashboards, and SLA tracking.
+NetSolve is a React/Next.js frontend for a network support ticketing system. It provides user, operator and admin interfaces with AI-assisted ticket creation, comment threads, dashboards, and SLA tracking.
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 

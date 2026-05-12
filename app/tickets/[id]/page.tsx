@@ -34,6 +34,7 @@ export default function TicketDetailPage() {
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [history, setHistory] = useState<TicketHistory[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const { role, user } = useContext(AuthContext);
   const [newStatus, setNewStatus] = useState<string>("");
   const [assignee, setAssignee] = useState<string>("");
@@ -41,12 +42,16 @@ export default function TicketDetailPage() {
 
   const loadTicket = useCallback(async () => {
     if (!id) return;
-    const data = await fetchTicket(id as string);
-    setTicket(data.ticket);
-    setComments(data.comments);
-    setHistory(data.history || []);
-    setNewStatus(data.ticket.status);
-    setAssignee(data.ticket.assigneeId || "");
+    try {
+      const data = await fetchTicket(id as string);
+      setTicket(data.ticket);
+      setComments(data.comments);
+      setHistory(data.history || []);
+      setNewStatus(data.ticket.status);
+      setAssignee(data.ticket.assigneeId || "");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to load ticket");
+    }
   }, [id]);
 
   useEffect(() => {
@@ -65,6 +70,20 @@ export default function TicketDetailPage() {
   };
 
   const isOverdue = ticket && ticket.slaHours && (new Date().getTime() - new Date(ticket.createdAt).getTime()) / (1000 * 60 * 60) > ticket.slaHours;
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center px-4">
+        <div className="max-w-xl rounded-3xl bg-white border border-red-200 p-10 text-center shadow-xl">
+          <h1 className="text-2xl font-semibold text-red-700 mb-4">{t("ticketDetail.errorTitle", "Unable to load ticket")}</h1>
+          <p className="text-sm text-red-600 mb-6">{error}</p>
+          <a href="/tickets" className="inline-flex items-center justify-center rounded-full bg-red-600 px-5 py-3 text-sm font-semibold text-white hover:bg-red-700 transition">
+            {t("ticketDetail.backToTickets", "Back to all tickets")}
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   if (!ticket) return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center">
@@ -253,6 +272,7 @@ export default function TicketDetailPage() {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                       authorId: user?.id || "anonymous",
+                      role: user?.role,
                       content: text,
                       internal,
                     }),
@@ -308,6 +328,7 @@ export default function TicketDetailPage() {
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
                         userId: user?.id || "anonymous",
+                        role: user?.role,
                         score,
                         comment,
                       }),

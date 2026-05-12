@@ -1,6 +1,6 @@
 <?php
 /**
- * HealthTicket PHP Backend - Main Router
+ * NetSolve PHP Backend - Main Router
  * 
  * Routes all API requests to the appropriate handler.
  * Run with: php -S localhost:8080 php-backend/index.php

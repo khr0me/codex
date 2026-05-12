@@ -1,10 +1,37 @@
+function getAuthData() {
+  if (typeof window === "undefined") return null;
+  const stored = localStorage.getItem("ht_user");
+  if (!stored) return null;
+  try {
+    return JSON.parse(stored);
+  } catch {
+    return null;
+  }
+}
+
+function getAuthQuery() {
+  const auth = getAuthData();
+  if (!auth?.id || !auth?.role) return "";
+  return `?userId=${encodeURIComponent(auth.id)}&role=${encodeURIComponent(auth.role)}`;
+}
+
 export async function fetchTickets(): Promise<any> {
-  const res = await fetch(`/api/tickets`);
+  const query = getAuthQuery();
+  const res = await fetch(`/api/tickets${query}`);
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error?.error || "Failed to load tickets");
+  }
   return res.json();
 }
 
 export async function fetchTicket(id: string): Promise<any> {
-  const res = await fetch(`/api/tickets/${id}`);
+  const query = getAuthQuery();
+  const res = await fetch(`/api/tickets/${id}${query}`);
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error?.error || "Failed to load ticket");
+  }
   return res.json();
 }
 
@@ -18,11 +45,21 @@ export async function createTicket(data: any): Promise<any> {
 }
 
 export async function updateTicket(id: string, data: any): Promise<any> {
+  const auth = getAuthData();
+  const body = {
+    ...data,
+    userId: auth?.id,
+    role: auth?.role,
+  };
   const res = await fetch(`/api/tickets/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    body: JSON.stringify(body),
   });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error?.error || "Failed to update ticket");
+  }
   return res.json();
 }
 

@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HealthTicket — Healthcare Support System",
-  description: "Healthcare ticketing system for efficient support management",
+  title: "NetSolve — Network Support System",
+  description: "Network ticketing system for efficient support management",
 };
 
 export default function RootLayout({

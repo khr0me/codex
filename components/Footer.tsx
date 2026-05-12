@@ -20,10 +20,10 @@ export const Footer: React.FC = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
               </span>
-              <span className="text-xl font-bold">HealthTicket</span>
+              <span className="text-xl font-bold">NetSolve</span>
             </div>
             <p className="text-blue-100 text-sm leading-relaxed">
-              Streamlined healthcare support with smart ticket management and real-time tracking.
+              Streamlined network support with smart ticket management and real-time tracking.
             </p>
           </div>
 
@@ -78,8 +78,8 @@ export const Footer: React.FC = () => {
             <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">Support</h3>
             <ul className="space-y-2">
               <li>
-                <a href="mailto:support@healthticket.com" className="text-blue-100 hover:text-white transition-colors text-sm">
-                  support@healthticket.com
+                <a href="mailto:support@netsolve.com" className="text-blue-100 hover:text-white transition-colors text-sm">
+                  support@netsolve.com
                 </a>
               </li>
               <li>
@@ -98,7 +98,7 @@ export const Footer: React.FC = () => {
         {/* Bottom section */}
         <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-blue-100">
-            &copy; {currentYear} HealthTicket. All rights reserved.
+            &copy; {currentYear} NetSolve. All rights reserved.
           </p>
           <div className="flex items-center space-x-6">
             <a href="#" className="text-blue-100 hover:text-white transition-colors text-sm">
