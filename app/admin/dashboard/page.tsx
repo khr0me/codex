@@ -5,26 +5,40 @@ import { AdminDashboard } from "../../../components/AdminDashboard";
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
 
   useEffect(() => {
     async function load() {
-      // TODO fetch real metrics from API
-      setStats({
-        ticketsByCategory: { IT: 12, Administrative: 5, Other: 3 },
-        busiestOperators: [
-          { name: "Alice", count: 7 },
-          { name: "Bob", count: 5 },
-          { name: "Charlie", count: 3 },
-        ],
-        meanResolutionHours: 24.3,
-        totalTickets: 45,
-        openTickets: 20,
-        slaBreaches: 2,
-      });
+      try {
+        const stored = localStorage.getItem("ht_user");
+        if (!stored) {
+          setError("Not authenticated");
+          return;
+        }
+        const user = JSON.parse(stored);
+        if (user.role !== "admin") {
+          setError("Access denied");
+          return;
+        }
+        const res = await fetch(`/api/admin/metrics?role=${user.role}&userId=${user.id}`);
+        if (!res.ok) throw new Error("Failed to fetch metrics");
+        const data = await res.json();
+        setStats(data);
+      } catch (e: any) {
+        setError(e.message || "Unknown error");
+      }
     }
     load();
   }, []);
+
+  if (error) return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <p className="text-red-500 font-semibold">{error}</p>
+      </div>
+    </div>
+  );
 
   if (!stats) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">

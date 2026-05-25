@@ -152,7 +152,11 @@
     "ticketsAssigned": "Tickets Assigned",
     "operatorPerformance": "Operator Performance",
     "categoriesTitle": "Tickets by Category",
+    "statusTitle": "Tickets by Status",
+    "priorityTitle": "Tickets by Priority",
     "busiestOperators": "Busiest Operators",
+    "noOperators": "No operators assigned yet",
+    "avgRating": "Avg Satisfaction",
     "recentActivity": "Recent Activity",
     "recentActivityDesc": "Recent ticket updates and assignments will appear here.",
     "loading": "Loading dashboard..."

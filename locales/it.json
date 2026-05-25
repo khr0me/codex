@@ -152,7 +152,11 @@
     "ticketsAssigned": "Ticket Assegnati",
     "operatorPerformance": "Prestazioni Operatori",
     "categoriesTitle": "Ticket per Categoria",
+    "statusTitle": "Ticket per Stato",
+    "priorityTitle": "Ticket per Priorità",
     "busiestOperators": "Operatori più Occupati",
+    "noOperators": "Nessun operatore assegnato",
+    "avgRating": "Soddisfazione Media",
     "recentActivity": "Attività Recente",
     "recentActivityDesc": "I recenti aggiornamenti e assegnazioni di ticket appariranno qui.",
     "loading": "Caricamento dashboard..."
