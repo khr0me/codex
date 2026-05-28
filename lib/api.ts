@@ -76,6 +76,10 @@ export async function uploadFile(file: File): Promise<string> {
 
 export async function fetchUserProfile(userId: string): Promise<any> {
   const res = await fetch(`/api/users/${userId}`);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Failed to load profile (${res.status})`);
+  }
   return res.json();
 }
 

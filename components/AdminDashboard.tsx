@@ -83,25 +83,31 @@ function StatCard({
   );
 }
 
-function timeAgo(timestamp: string): string {
-  const diff = Date.now() - new Date(timestamp).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  return `${days}d ago`;
+function useTimeAgo() {
+  const { t } = useTranslation();
+  return (timestamp: string): string => {
+    const diff = Date.now() - new Date(timestamp).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return t("admin.justNow");
+    if (mins < 60) return t("admin.minutesAgo", { count: mins });
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return t("admin.hoursAgo", { count: hrs });
+    const days = Math.floor(hrs / 24);
+    return t("admin.daysAgo", { count: days });
+  };
 }
 
-function actionColor(action: string): string {
-  switch (action) {
-    case "Created": return "bg-blue-100 text-blue-700";
-    case "Closed": return "bg-green-100 text-green-700";
-    case "Assigned": return "bg-purple-100 text-purple-700";
-    case "Updated": return "bg-amber-100 text-amber-700";
-    default: return "bg-gray-100 text-gray-600";
-  }
+function useActionColor() {
+  const { t } = useTranslation();
+  return (action: string): { color: string; label: string } => {
+    switch (action) {
+      case "Created": return { color: "bg-blue-100 text-blue-700", label: t("admin.actionCreated") };
+      case "Closed": return { color: "bg-green-100 text-green-700", label: t("admin.actionClosed") };
+      case "Assigned": return { color: "bg-purple-100 text-purple-700", label: t("admin.actionAssigned") };
+      case "Updated": return { color: "bg-amber-100 text-amber-700", label: t("admin.actionUpdated") };
+      default: return { color: "bg-gray-100 text-gray-600", label: action };
+    }
+  };
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -118,10 +124,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   recentActivity,
 }) => {
   const { t } = useTranslation();
+  const timeAgo = useTimeAgo();
+  const getAction = useActionColor();
 
   // ── Chart data ────────────────────────────────────────────────
   const categoryData = {
-    labels: Object.keys(ticketsByCategory),
+    labels: Object.keys(ticketsByCategory).map((k) => t(`category.${k}`)),
     datasets: [
       {
         data: Object.values(ticketsByCategory),
@@ -132,7 +140,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   const statusData = {
-    labels: Object.keys(ticketsByStatus),
+    labels: Object.keys(ticketsByStatus).map((k) => t(`status.${k}`)),
     datasets: [
       {
         data: Object.values(ticketsByStatus),
@@ -143,7 +151,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   const priorityData = {
-    labels: Object.keys(ticketsByPriority),
+    labels: Object.keys(ticketsByPriority).map((k) => t(`priority.${k}`)),
     datasets: [
       {
         label: t("admin.ticketsAssigned"),
@@ -212,7 +220,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       label: t("admin.openTickets"),
       value: openTickets,
       gradient: "from-emerald-500 to-emerald-600",
-      sub: totalTickets > 0 ? `${Math.round((openTickets / totalTickets) * 100)}% of total` : undefined,
+      sub: totalTickets > 0 ? `${Math.round((openTickets / totalTickets) * 100)}${t("admin.ofTotal")}` : undefined,
       icon: (
         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -223,7 +231,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       label: t("admin.avgResolution"),
       value: meanResolutionHours > 0 ? `${meanResolutionHours.toFixed(1)}h` : "—",
       gradient: "from-amber-500 to-amber-600",
-      sub: meanResolutionHours > 0 ? "based on closed tickets" : "no closed tickets yet",
+      sub: meanResolutionHours > 0 ? t("admin.basedOnClosed") : t("admin.noClosedTickets"),
       icon: (
         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -234,7 +242,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       label: t("admin.slaBreaches"),
       value: slaBreaches,
       gradient: slaBreaches > 0 ? "from-red-500 to-red-600" : "from-gray-400 to-gray-500",
-      sub: slaBreaches > 0 ? "requires attention" : "all within SLA",
+      sub: slaBreaches > 0 ? t("admin.requiresAttention") : t("admin.allWithinSla"),
       icon: (
         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -245,7 +253,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       label: t("admin.avgRating"),
       value: avgRating != null ? `${avgRating.toFixed(1)} / 5` : "—",
       gradient: "from-violet-500 to-violet-600",
-      sub: totalRatings > 0 ? `${totalRatings} rating${totalRatings !== 1 ? "s" : ""}` : "no ratings yet",
+      sub: totalRatings > 0 ? t("admin.ratingsCount_other", { count: totalRatings }) : t("admin.noRatingsYet"),
       icon: (
         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -266,7 +274,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
           <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium bg-green-50 text-green-700 border border-green-200 px-3 py-1.5 rounded-full">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-            Live data
+            {t("admin.liveData")}
           </span>
         </div>
 
@@ -327,10 +335,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
           ) : (
             <ul className="divide-y divide-gray-50">
-              {recentActivity.map((entry) => (
+              {recentActivity.map((entry) => {
+                const { color: actionCls, label: actionLabel } = getAction(entry.action);
+                return (
                 <li key={entry.id} className="flex items-start gap-3 py-3">
-                  <span className={`mt-0.5 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${actionColor(entry.action)}`}>
-                    {entry.action}
+                  <span className={`mt-0.5 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${actionCls}`}>
+                    {actionLabel}
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-gray-800 truncate">
@@ -345,11 +355,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       )}
                     </p>
                     <p className="text-xs text-gray-400 mt-0.5">
-                      {entry.userName ?? "System"} · {timeAgo(entry.timestamp)}
+                      {entry.userName ?? t("admin.system")} · {timeAgo(entry.timestamp)}
                     </p>
                   </div>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           )}
         </div>
